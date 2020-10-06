@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
 import { validateEmail } from "../../utils/validations";
 import { isEmpty, size } from "lodash";
+import * as firebase from "firebase";
 
 export default function RegisterForm(props) {
     const { toastRef } = props;
@@ -32,7 +33,15 @@ export default function RegisterForm(props) {
             );
         } else {
             //Enviar a firebase
-            console.log("Formulario OK");
+            firebase
+                .auth()
+                .createUserWithEmailAndPassword(formData.email, formData.password)
+                .then(response => {
+                    console.log(response);
+                })
+                .catch(() => {
+                    toastRef.current.show("El email ya está en uso, prueba con otro")
+                })
         }
     }
 
