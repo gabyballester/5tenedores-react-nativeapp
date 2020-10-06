@@ -1,16 +1,39 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
+import { validateEmail } from "../../utils/validations";
+import { isEmpty, size } from "lodash";
 
-export default function RegisterForm() {
+export default function RegisterForm(props) {
+    const { toastRef } = props;
     // iniciamos estado con contraseña oculta
     const [showPassword, setShowPassword] = useState(false)
     const [showRepeatPassword, setShowRepeatPassword] = useState(false)
     const [formData, setFormData] = useState(defaultFormValue());
-    console.log(formData);
+
+    const minLengthPass = 6;
 
     const onSubmit = () => {
-        console.log(formData);
+        //validación campos vacíos / rellenados
+        if (
+            isEmpty(formData.email) ||
+            isEmpty(formData.password) ||
+            isEmpty(formData.reapeatPassword)
+        ) {
+            toastRef.current.show("Todos los campos son obligatorios");
+            // Si formulario es correcto, valida email
+        } else if (!validateEmail(formData.email)) {
+            toastRef.current.show("El email no es correcto");
+        } else if (formData.password !== formData.reapeatPassword) {
+            toastRef.current.show("Las contraseñas tienen que ser iguales");
+        } else if (size(formData.password) < minLengthPass) {
+            toastRef.current.show(
+                `Longitud de contraseña: minimo ${minLengthPass} caracteres`
+            );
+        } else {
+            //Enviar a firebase
+            console.log("Formulario OK");
+        }
     }
 
     const onChange = (e, type) => {
