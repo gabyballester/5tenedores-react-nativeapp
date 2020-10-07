@@ -1,18 +1,27 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
+import { isEmpty } from "lodash";
+import {validateEmail} from "../../utils/validations";
 
-export default function LoginForm() {
+export default function LoginForm(props) {
+    const {toastRef} = props;
 
     const [showPassword, setShowPassword] = useState(false)
     const [formData, setFormData] = useState(defaultFormValue());
 
     const onChange = (e, type) => { // maneja nuestro estado
-        setFormData({ ...formData, [type]: e.nativeEvent.text});
+        setFormData({ ...formData, [type]: e.nativeEvent.text });
     };
 
     const onSubmit = () => { //envía formulario
-        console.log(formData);
+        if(isEmpty(formData.email) || isEmpty(formData.password)){
+            toastRef.current.show("Todos los campos son obligatorios")
+        } else if (!validateEmail(formData.email)) {
+            toastRef.current.show("Email no es correcto")
+        } else {
+            console.log("OK");
+        }
     };
 
     return (
