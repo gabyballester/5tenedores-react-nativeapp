@@ -1,10 +1,19 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
 
 export default function LoginForm() {
 
     const [showPassword, setShowPassword] = useState(false)
+    const [formData, setFormData] = useState(defaultFormValue());
+
+    const onChange = (e, type) => { // maneja nuestro estado
+        setFormData({ ...formData, [type]: e.nativeEvent.text});
+    };
+
+    const onSubmit = () => { //envía formulario
+        console.log(formData);
+    };
 
     return (
 
@@ -13,6 +22,7 @@ export default function LoginForm() {
             <Input
                 placeholder="Correo electrónico"
                 containerStyle={styles.inputform}
+                onChange={(e) => onChange(e, "email")}
                 rightIcon={
                     <Icon
                         type="material-community"
@@ -25,14 +35,15 @@ export default function LoginForm() {
             <Input
                 placeholder="Contraseña"
                 containerStyle={styles.inputForm}
+                onChange={(e) => onChange(e, "password")}
                 password={true}
-                secureTextEntry={showPassword ? false: true}
+                secureTextEntry={showPassword ? false : true}
                 rightIcon={
                     <Icon
                         type="material-community"
                         name={showPassword ? "eye-off-outline" : "eye-outline"}
                         iconStyle={styles.iconRight}
-                        onPress={()=>setShowPassword(!showPassword)}
+                        onPress={() => setShowPassword(!showPassword)}
                     />
                 }
             />
@@ -41,10 +52,17 @@ export default function LoginForm() {
                 title="Iniciar sesión"
                 containerStyle={styles.btnContainer}
                 buttonStyle={styles.btnLogin}
+                onPress={onSubmit}
             />
 
         </View>
     )
+}
+
+function defaultFormValue() {
+    return {
+        email: "", password: ""
+    }
 }
 
 const styles = StyleSheet.create({
