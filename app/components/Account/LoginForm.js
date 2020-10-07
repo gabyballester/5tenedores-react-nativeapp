@@ -2,25 +2,40 @@ import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
 import { isEmpty } from "lodash";
-import {validateEmail} from "../../utils/validations";
+import { useNavigation } from "@react-navigation/native";
+import * as firebase from "firebase";
+import { validateEmail } from "../../utils/validations";
+import Loading from "../Loading";
 
 export default function LoginForm(props) {
-    const {toastRef} = props;
-
+    const { toastRef } = props;
     const [showPassword, setShowPassword] = useState(false)
     const [formData, setFormData] = useState(defaultFormValue());
+    const [loading, setLoading] = useState(false)
+    const navigation = useNavigation();
 
     const onChange = (e, type) => { // maneja nuestro estado
         setFormData({ ...formData, [type]: e.nativeEvent.text });
     };
 
     const onSubmit = () => { //envía formulario
-        if(isEmpty(formData.email) || isEmpty(formData.password)){
+        if (isEmpty(formData.email) || isEmpty(formData.password)) {
             toastRef.current.show("Todos los campos son obligatorios")
         } else if (!validateEmail(formData.email)) {
             toastRef.current.show("Email no es correcto")
         } else {
-            console.log("OK");
+            setLoading(true);
+            firebase
+                .auth()
+                .signInWithEmailAndPassword(formData.email, formData.password)
+                .then(() => {
+                    setLoading(false);
+                    navigation.navigate("account")
+                })
+                .catch(() => {
+                    setLoading(false);
+                    toastRef.current.show("Email o contraseña incorrecta")
+                })
         }
     };
 
@@ -63,7 +78,7 @@ export default function LoginForm(props) {
                 buttonStyle={styles.btnLogin}
                 onPress={onSubmit}
             />
-
+            <Loading isVisible={loading} text="Iniciando sesión" />
         </View>
     )
 }
