@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
+import Loading from "../Loading";
 import { validateEmail } from "../../utils/validations";
 import { isEmpty, size } from "lodash";
 import * as firebase from "firebase";
@@ -12,6 +13,7 @@ export default function RegisterForm(props) {
     const [showPassword, setShowPassword] = useState(false)
     const [showRepeatPassword, setShowRepeatPassword] = useState(false)
     const [formData, setFormData] = useState(defaultFormValue());
+    const [loading, setLoading] = useState(false)
     const navigation  = useNavigation();
 
     const minLengthPass = 6;
@@ -34,14 +36,18 @@ export default function RegisterForm(props) {
                 `Longitud de contraseña: minimo ${minLengthPass} caracteres`
             );
         } else {
+            //seteo loading a true
+            setLoading(true)
             //Enviar a firebase
             firebase
                 .auth()
                 .createUserWithEmailAndPassword(formData.email, formData.password)
                 .then(() => {
+                    setLoading(false)
                     navigation.navigate("account");
                 })
                 .catch(() => {
+                    setLoading(false)
                     toastRef.current.show("El email ya está en uso, prueba con otro")
                 })
         }
@@ -102,6 +108,7 @@ export default function RegisterForm(props) {
                 buttonStyle={styles.btnRegister}
                 onPress={onSubmit}
             />
+            <Loading isVisible={loading} text="Creando cuenta" />
         </View>
     )
 }
