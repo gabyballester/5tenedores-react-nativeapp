@@ -31,9 +31,9 @@ export default function InfoUser(props) {
             } else {
                 uploadImage(result.uri)
                     .then(() => {
-                        console.log("Imagen subida");
+                        updatePhotoUrl();
                     })
-                    .catch(() => {
+                    .catch((error) => {
                         toastRef.current
                             .show("Error al actualizar el avatar");
                     })
@@ -51,6 +51,20 @@ export default function InfoUser(props) {
         return ref.put(blob);
     }
 
+    const updatePhotoUrl = () => {
+        firebase.storage()
+            .ref(`avatar/${uid}.jpg`)
+            .getDownloadURL()
+            .then(async (url) => {
+                console.log(url);
+                const update = {
+                    photoURL: url
+                }
+                await firebase.auth().currentUser.updateProfile(update);
+                console.log("imagen actualizada");
+            });
+    };
+
     return (
         <View style={styles.viewUserInfo}>
             <Avatar
@@ -59,9 +73,8 @@ export default function InfoUser(props) {
                 onEditPress={changeAvatar}
                 containerStyle={styles.userInfoAvatar}
                 source={
-                    // Si photoURL tiene contenido
                     photoURL ? { uri: photoURL } :
-                        require("../../../assets/img/avatar-default.jpg")
+                    require("../../../assets/img/5tenedores-logo.png")
                 }
             />
             <View>
