@@ -61,8 +61,11 @@ export default function InfoUser(props) {
                     photoURL: url
                 }
                 await firebase.auth().currentUser.updateProfile(update);
-                console.log("imagen actualizada");
-            });
+            })
+            .catch(() => {
+                toastRef.current
+                    .show("Error al actualizar el avatar");
+            })
     };
 
     return (
@@ -74,7 +77,7 @@ export default function InfoUser(props) {
                 containerStyle={styles.userInfoAvatar}
                 source={
                     photoURL ? { uri: photoURL } :
-                    require("../../../assets/img/5tenedores-logo.png")
+                        require("../../../assets/img/5tenedores-logo.png")
                 }
             />
             <View>
