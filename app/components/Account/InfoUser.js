@@ -7,7 +7,7 @@ import * as ImagePicker from "expo-image-picker";
 
 export default function InfoUser(props) {
     const { userInfo: { uid, photoURL, displayName, email },
-        toastRef } = props;
+    toastRef, setLoading, setLoadingText } = props;
 
     const changeAvatar = async () => {
         const resultPermission = await Permissions.askAsync(
@@ -43,6 +43,8 @@ export default function InfoUser(props) {
     }
 
     const uploadImage = async (uri) => {
+        setLoadingText("Actualizando Avatar")
+        setLoading(true)
         const response = await fetch(uri);
         const blob = await response.blob();
         //esto sube a la carpeta avatar de firebase y le doy nombre
@@ -61,6 +63,7 @@ export default function InfoUser(props) {
                     photoURL: url
                 }
                 await firebase.auth().currentUser.updateProfile(update);
+                setLoading(false);
             })
             .catch(() => {
                 toastRef.current
