@@ -6,7 +6,7 @@ import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 
 export default function InfoUser(props) {
-    const { userInfo: { photoURL, displayName, email },
+    const { userInfo: { uid, photoURL, displayName, email },
         toastRef } = props;
 
     const changeAvatar = async () => {
@@ -25,9 +25,30 @@ export default function InfoUser(props) {
                 allowsEditing: true,
                 aspect: [4, 3]
             });
-            console.log(result);
+            if (result.cancelled) { // si el usuario cancela
+                toastRef.current
+                    .show("Has cerrado la selección de imágenes")
+            } else {
+                uploadImage(result.uri)
+                    .then(() => {
+                        console.log("Imagen subida");
+                    })
+                    .catch(() => {
+                        toastRef.current
+                            .show("Error al actualizar el avatar");
+                    })
+            }
         }
 
+    }
+
+    const uploadImage = async (uri) => {
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        //esto sube a la carpeta avatar de firebase y le doy nombre
+        const ref = firebase.storage().ref().child(`avatar/${uid}.jpg`);
+        //subida de archivo
+        return ref.put(blob);
     }
 
     return (
