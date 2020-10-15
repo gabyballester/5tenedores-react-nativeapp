@@ -11,6 +11,7 @@ export default function UserLogged() {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("");
+  const [reloadUserInfo, setReloadUserInfo] = useState(false)
   const toastRef = useRef();
 
   useEffect(() => {
@@ -19,7 +20,8 @@ export default function UserLogged() {
       const user = await firebase.auth().currentUser;
       setUserInfo(user);
     })()
-  }, [])
+    setReloadUserInfo(false);
+  }, [reloadUserInfo])
 
   return (
     <View style={styles.viewUserInfo}>
@@ -32,6 +34,7 @@ export default function UserLogged() {
       <AccountOptions
         userInfo={userInfo}
         toastRef={toastRef}
+        setReloadUserInfo={setReloadUserInfo}
       />
       <Button
         title="Cerrar sesión"
