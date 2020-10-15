@@ -6,11 +6,34 @@ import Modal from "../Modal";
 
 export default function AccountOptions(props) {
     const { userInfo, toastRef } = props;
-    const [showModal, setShowModal] = useState(true)
+    const [showModal, setShowModal] = useState(false)
+    const [renderComponent, setRenderComponent] = useState(null)
 
     const selectedComponent = (key) => {
-        console.log("click!!");
-        console.log(key);
+        switch (key) {
+            case "displayName": //devuelvo un componente Texto
+                setRenderComponent(
+                    <Text>Cambiando nombre y apellidos</Text>
+                );
+                setShowModal(true) //abro el modal
+                break;
+            case "email": //devuelvo un componente Texto
+                setRenderComponent(
+                    <Text>Cambiando Email</Text>
+                );
+                setShowModal(true) //abro el modal
+                break;
+            case "password": //devuelvo un componente Texto
+                setRenderComponent(
+                    <Text>Cambiando Email</Text>
+                );
+                setShowModal(true) //abro el modal
+                break;
+            default:
+                setRenderComponent(null);
+                setShowModal(false) //modal cerrado
+                break;
+        }
     }
 
     const menuOptions = generateOptions(selectedComponent);
@@ -35,12 +58,12 @@ export default function AccountOptions(props) {
                     onPress={menu.onPress}
                 />
             ))}
-            <Modal
-                isVisible={showModal}
-                setIsVisible={setShowModal}
-            >
-                <Text>Modal abierto</Text>
-            </Modal>
+            {/* Ternario que muestra modal sólo si renderComponent existe */}
+            {renderComponent && (
+                <Modal isVisible={showModal} setIsVisible={setShowModal}>
+                    {renderComponent}
+                </Modal>
+            )}
         </View>
     )
 }
