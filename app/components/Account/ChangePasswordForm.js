@@ -2,26 +2,24 @@ import React, { useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Input, Button } from "react-native-elements";
 import { size } from "lodash";
+import { reauthenticate } from "../../utils/api";
+import * as firebase from "firebase";
 
-export default function ChangePasswordForm() {
+export default function ChangePasswordForm(props) {
+    const { setShowModal, toastRef } = props;
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState(defaultValue());
     const { password, newPassword, repeatNewPassword } = formData;
-    const [errors, setErrors] = useState({})
+    const [errors, setErrors] = useState({});
+    const [isLoading, setIsLoading] = useState(false)
 
     const onChange = (e, type) => {
         setErrors({});
         setFormData({ ...formData, [type]: e.nativeEvent.text });
     };
 
-
-    const onSubmit = () => {
-        if (validateForm()) {
-            console.log("Formulario OK");
-        }
-    };
-
-    const validateForm = () => {
+    const onSubmit = async () => {
+        let isSetErrors = true;
         let errorsTemp = {};
         if (
             !password |
@@ -52,9 +50,34 @@ export default function ChangePasswordForm() {
                     "Mínimo 6 caracteres"
             };
         } else {
-            return true;
+            setIsLoading(true);
+            await reauthenticate(password)
+                .then(async () => {
+                    await firebase.auth().currentUser
+                        .updatePassword(newPassword)
+                        .then(() => {
+                            isSetErrors = true;
+                            setIsLoading(false);
+                            setShowModal(false);
+                            firebase.auth().signOut();
+                        }).catch(() => {
+                            errorsTemp = {
+                                other:
+                                    "Error al actualizar la contraseña"
+                            }
+                            setIsLoading(false);
+                        })
+
+                }).catch((error) => {
+                    console.log(error);
+                    errorsTemp = {
+                        password:
+                            "Contraseña incorrecta"
+                    };
+                    setIsLoading(false);
+                })
         }
-        setErrors(errorsTemp);
+        isSetErrors && setErrors(errorsTemp);
     }
 
     return (
@@ -114,6 +137,7 @@ export default function ChangePasswordForm() {
                 containerStyle={styles.btnContainer}
                 buttonStyle={styles.btn}
                 onPress={onSubmit}
+                loading={isLoading}
             >
             </Button>
 
