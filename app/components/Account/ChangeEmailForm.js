@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Input, Button } from "react-native-elements";
 import { validateEmail } from "../../utils/validations";
+import { reauthenticate } from "../../utils/api";
+import * as firebase from "firebase";
 
 export default function ChangeEmailForm(props) {
 
@@ -9,6 +11,7 @@ export default function ChangeEmailForm(props) {
     const [formData, setFormData] = useState(defaultValue())
     const [showPassword, setShowPassword] = useState(false)
     const [errors, setErrors] = useState({})
+    const [isLoading, setIsLoading] = useState(false)
 
     const onChange = (e, type) => { //variable type dinámica
         setFormData({ ...formData, [type]: e.nativeEvent.text })
@@ -17,13 +20,37 @@ export default function ChangeEmailForm(props) {
     const onSubmit = () => {
         setErrors({}) //si no existe email o es igual al que existe
         if (!formData.email) {
-            setErrors({ email: "El email está vacío" })
+            setErrors({ email: "El email está vacío" });
         } else if (email === formData.email) {
-            setErrors({ email: "El email no ha cambiado." })
+            setErrors({ email: "El email no ha cambiado." });
         } else if (!validateEmail(formData.email)) {
-            setErrors({ email: "El email es incorrecto." })
-        } else if(!formData.password){
-            setErrors({ password: "El password está vacío." })
+            setErrors({ email: "El email es incorrecto." });
+        } else if (!formData.password) {
+            setErrors({ password: "El password está vacío." });
+        } else { //si no hay error
+            setIsLoading(true);
+            reauthenticate(formData.password)
+            .then(() => {
+                console.log("Actualizando");
+                firebase.auth()
+                .currentUser.updateEmail(formData.email)
+                    .then(() => {
+                        console.log("Actualizando email");
+                        setIsLoading(false);
+                        setReloadUserInfo(true);
+                        toastRef.current
+                            .show("Email actualizado correctamente");
+                        setShowModal(false);
+                    }).catch(() => {
+                        setErrors({
+                            email: "Error al actualizar el email"
+                        });
+                        setIsLoading(false);
+                    })
+            }).catch(() => {
+                setIsLoading(false);
+                setErrors({ password: "La contraseña no es correcta" });
+            })
         }
     }
 
@@ -32,7 +59,7 @@ export default function ChangeEmailForm(props) {
             <Input
                 placeholder="Correo electrónico"
                 constainerStyle={styles.input}
-                defaultValue={email || "email@vacio.es"}
+                defaultValue={email || ""}
                 rightIcon={{
                     type: "material-community",
                     name: "at",
@@ -61,6 +88,7 @@ export default function ChangeEmailForm(props) {
                 containerStyle={styles.btnContainer}
                 buttonStyle={styles.btn}
                 onPress={onSubmit}
+                loading={isLoading}
             >
             </Button>
         </View>

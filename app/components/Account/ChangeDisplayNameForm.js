@@ -29,6 +29,8 @@ export default function ChangeDisplayNameForm(props) {
                     setIsLoading(false);
                     setReloadUserInfo(true);
                     setShowModal(false);
+                    toastRef.current
+                    .show("Nombre actualizado correctamente");
                 })
                 .catch(() => {
                     setError("Error al actualizar el nombre")

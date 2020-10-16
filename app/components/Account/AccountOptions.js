@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { ListItem } from "react-native-elements";
 import { map } from "lodash";
 import Modal from "../Modal";
 import ChangeDisplayNameForm from "./ChangeDisplayNameForm";
 import ChangeEmailForm from "./ChangeEmailForm";
+import ChangePasswordForm from "./ChangePasswordForm";
 
 export default function AccountOptions(props) {
     const { userInfo, toastRef, setReloadUserInfo } = props;
-    const [showModal, setShowModal] = useState(false)
-    const [renderComponent, setRenderComponent] = useState(null)
+    const [showModal, setShowModal] = useState(false);
+    const [renderComponent, setRenderComponent] = useState(null);
 
     const selectedComponent = (key) => {
         switch (key) {
-            case "displayName": //devuelvo un componente Texto
+            case "displayName":
                 setRenderComponent(
                     <ChangeDisplayNameForm
                         displayName={userInfo.displayName}
@@ -24,12 +25,11 @@ export default function AccountOptions(props) {
                 );
                 setShowModal(true) //abro el modal
                 break;
-            case "email": //devuelvo un componente Texto
+            case "email":
                 setRenderComponent(
                     <ChangeEmailForm
                         // email={userInfo.email}
-                        email={userInfo.email ?
-                            userInfo.email : "nomail@mail.es"}
+                        email={userInfo.email}
                         setShowModal={setShowModal}
                         toastRef={toastRef}
                         setReloadUserInfo={setReloadUserInfo}
@@ -37,9 +37,12 @@ export default function AccountOptions(props) {
                 );
                 setShowModal(true) //abro el modal
                 break;
-            case "password": //devuelvo un componente Texto
+            case "password":
                 setRenderComponent(
-                    <Text>Cambiando Email</Text>
+                    <ChangePasswordForm
+                        setShowModal={setShowModal}
+                        toastRef={toastRef}
+                    />
                 );
                 setShowModal(true) //abro el modal
                 break;
@@ -90,7 +93,7 @@ function generateOptions(selectedComponent) {
             iconNameLeft: "account-circle",
             iconColorLeft: "#ccc",
             iconNameRight: "chevron-right",
-            iconColorRight: "ccc",
+            iconColorRight: "#ccc",
             onPress: () => selectedComponent("displayName")
         },
         {
@@ -99,7 +102,7 @@ function generateOptions(selectedComponent) {
             iconNameLeft: "at",
             iconColorLeft: "#ccc",
             iconNameRight: "chevron-right",
-            iconColorRight: "ccc",
+            iconColorRight: "#ccc",
             onPress: () => selectedComponent("email")
         },
 
@@ -109,7 +112,7 @@ function generateOptions(selectedComponent) {
             iconNameLeft: "lock-reset",
             iconColorLeft: "#ccc",
             iconNameRight: "chevron-right",
-            iconColorRight: "ccc",
+            iconColorRight: "#ccc",
             onPress: () => selectedComponent("password")
         },
     ]
