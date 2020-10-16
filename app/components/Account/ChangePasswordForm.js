@@ -1,18 +1,60 @@
 import React, { useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Input, Button } from "react-native-elements";
+import { size } from "lodash";
 
 export default function ChangePasswordForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState(defaultValue());
+    const { password, newPassword, repeatNewPassword } = formData;
+    const [errors, setErrors] = useState({})
 
     const onChange = (e, type) => {
-        //accedemos al valor
-        setFormData({...formData, [type]: e.nativeEvent.text});
+        setErrors({});
+        setFormData({ ...formData, [type]: e.nativeEvent.text });
     };
 
+
     const onSubmit = () => {
-        console.log(formData);
+        if (validateForm()) {
+            console.log("Formulario OK");
+        }
+    };
+
+    const validateForm = () => {
+        let errorsTemp = {};
+        if (
+            !password |
+            !newPassword ||
+            !repeatNewPassword
+        ) {
+            errorsTemp = {
+                password:
+                    !password ?
+                        "La contraseña no puede estar vacía" : "",
+                newPassword:
+                    !newPassword ?
+                        "La contraseña no puede estar vacía" : "",
+                repeatNewPassword:
+                    !repeatNewPassword ?
+                        "La contraseña no puede estar vacía" : "",
+            };
+        } else if (newPassword !== repeatNewPassword) {
+            errorsTemp = {
+                newPassword: "Las contraseñas no coinciden",
+                repeatNewPassword: "Las contraseñas no coinciden"
+            };
+        } else if (size(newPassword) < 6) {
+            errorsTemp = {
+                repeatNewPassword:
+                    "Mínimo 6 caracteres",
+                newPassword:
+                    "Mínimo 6 caracteres"
+            };
+        } else {
+            return true;
+        }
+        setErrors(errorsTemp);
     }
 
     return (
@@ -32,6 +74,7 @@ export default function ChangePasswordForm() {
                     onPress: () => (setShowPassword(!showPassword))
                 }}
                 onChange={(e) => onChange(e, "password")}
+                errorMessage={errors.password}
             />
 
             <Input
@@ -47,6 +90,7 @@ export default function ChangePasswordForm() {
                     onPress: () => (setShowPassword(!showPassword))
                 }}
                 onChange={(e) => onChange(e, "newPassword")}
+                errorMessage={errors.newPassword}
             />
 
             <Input
@@ -62,6 +106,7 @@ export default function ChangePasswordForm() {
                     onPress: () => (setShowPassword(!showPassword))
                 }}
                 onChange={(e) => onChange(e, "repeatNewPassword")}
+                errorMessage={errors.repeatNewPassword}
             />
 
             <Button
@@ -71,7 +116,7 @@ export default function ChangePasswordForm() {
                 onPress={onSubmit}
             >
             </Button>
-            
+
         </View>
     )
 }
