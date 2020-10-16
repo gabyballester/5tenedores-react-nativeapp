@@ -3,10 +3,22 @@ import { StyleSheet, View, Text } from "react-native";
 import { Input, Button } from "react-native-elements";
 
 export default function ChangePasswordForm() {
-    const [showPassword, setShowPassword] = useState(false)
+    const [showPassword, setShowPassword] = useState(false);
+    const [formData, setFormData] = useState(defaultValue());
+
+    const onChange = (e, type) => {
+        //accedemos al valor
+        setFormData({...formData, [type]: e.nativeEvent.text});
+    };
+
+    const onSubmit = () => {
+        console.log(formData);
+    }
 
     return (
+
         <View style={styles.view}>
+
             <Input
                 placeholder="Contraseña actual"
                 constainerStyle={styles.input}
@@ -19,6 +31,7 @@ export default function ChangePasswordForm() {
                     color: "#c2c2c2",
                     onPress: () => (setShowPassword(!showPassword))
                 }}
+                onChange={(e) => onChange(e, "password")}
             />
 
             <Input
@@ -33,6 +46,7 @@ export default function ChangePasswordForm() {
                     color: "#c2c2c2",
                     onPress: () => (setShowPassword(!showPassword))
                 }}
+                onChange={(e) => onChange(e, "newPassword")}
             />
 
             <Input
@@ -47,16 +61,27 @@ export default function ChangePasswordForm() {
                     color: "#c2c2c2",
                     onPress: () => (setShowPassword(!showPassword))
                 }}
+                onChange={(e) => onChange(e, "repeatNewPassword")}
             />
 
             <Button
                 title="Cambiar contraseña"
                 containerStyle={styles.btnContainer}
                 buttonStyle={styles.btn}
+                onPress={onSubmit}
             >
             </Button>
+            
         </View>
     )
+}
+
+function defaultValue() {
+    return {
+        password: "",
+        newPassword: "",
+        repeatNewPassword: ""
+    }
 }
 
 const styles = StyleSheet.create({
