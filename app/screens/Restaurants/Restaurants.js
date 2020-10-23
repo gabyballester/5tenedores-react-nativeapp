@@ -4,7 +4,8 @@ import { Icon } from "react-native-elements";
 import { firebaseApp } from "../../utils/firebase";
 import firebase from "firebase/app";
 
-export default function Restaurants() {
+export default function Restaurants(props) {
+  const {navigation} = props;
   //manejo del estado local del usuario
   const [user, setUser] = useState(null)
   // Ejecución al crearse el componente
@@ -24,6 +25,7 @@ export default function Restaurants() {
           name="plus"
           color="#00a680"
           containerStyle={styles.btnContainer}
+          onPress = {()=> navigation.navigate("add-restaurant")}
         />
       )}
 
