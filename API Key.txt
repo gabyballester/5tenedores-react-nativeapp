@@ -1,0 +1,7 @@
+Api key: AIzaSyDJaFxTj23qLVLbvCt3Tb9O3FCTgkXZoJw
+
+Accessing credentials for gabbscoding in project 5-tenedores
+Google Certificate Fingerprint:     99:06:7A:0F:E6:AB:98:C0:A9:7A:3F:22:F2:72:11:D8:96:F5:83:CA
+Google Certificate Hash (SHA-1):    99067A0FE6AB98C0A97A3F22F27211D896F583CA
+Google Certificate Hash (SHA-256):  8E4C7AAC887328E780728CDCEB83D4747B0ED2DA94CDE40DF5488EE329357F8C
+Facebook Key Hash:                  mQZ6D+armMCpej8i8nIR2Jb1g8o=

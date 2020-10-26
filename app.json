@@ -20,6 +20,12 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.gabrielballester.cincotenedores",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDJaFxTj23qLVLbvCt3Tb9O3FCTgkXZoJw"
+        }
+      },
       "permissions": [
         "CAMERA_ROLL",
         "READ_EXTERNAL_STORAGE",

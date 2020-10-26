@@ -7,6 +7,13 @@ import * as Location from "expo-location";
 import { map, size, filter } from "lodash";
 import MapView from "react-native-maps";
 import Modal from "../Modal";
+import uuid from "random-uuid-v4";
+//config para firebase
+import { firebaseApp } from "../../utils/firebase";
+import firebase from "firebase/app";
+import "firebase/storage";
+import "firebase/firestore";
+const db = firebase.firestore(firebaseApp);
 
 const widthScreen = Dimensions.get("window").width;
 
@@ -25,10 +32,58 @@ export default function AddRestaurantForm(props) {
     } else if (size(imagesSelected) === 0) {
       toastRef.current.show("Deber de subir al menos una foto");
     } else if (!locationRestaurant) {
-      toastRef.current.show("El restaurante debe de tener localización en el mapa",3000);
+      toastRef.current.show("El restaurante debe de tener localización en el mapa");
     } else {
-        console.log("ok");
+      setIsLoading(true);
+      uploadImageStorage().then((response) => {
+        db.collection("restaurants")
+          .add({
+            name: restaurantName,
+            address: restaurantAddress,
+            description: restaurantDescription,
+            location: locationRestaurant,
+            images: response, //array url de imágenes
+            rating: 0,
+            ratingTotal: 0,
+            quantityVoting: 0,
+            createdAt: new Date(),
+            createdBy: firebase.auth().currentUser.uid,
+          })
+          .then(() => {
+            setIsLoading(false);
+            navigation.navigate("restaurants")
+          })
+          .catch(() => {
+            setIsLoading(false);
+            toastRef.current.show(
+              "Error al subir el restaurante, inténtalo más tarde"
+            );
+          });
+      });
     }
+  };
+
+  const uploadImageStorage = async () => {
+    const imageBlob = [];
+
+    await Promise.all(
+      map(imagesSelected, async (image) => {
+        const response = await fetch(image);
+        const blob = await response.blob();
+        const ref = firebase.storage().ref("restaurants").child(uuid());
+        await ref.put(blob).then(async (result) => {
+          await firebase
+            .storage()
+            .ref(`restaurants/${result.metadata.name}`)
+            .getDownloadURL()
+            .then((photoUrl) => {
+              imageBlob.push(photoUrl);
+            });
+        });
+      })
+    );
+
+    return imageBlob;
   };
 
   return (
@@ -83,7 +138,7 @@ function FormAdd(props) {
     setRestaurantAddress,
     setRestaurantDescription,
     setIsVisibleMap,
-    locationRestaurant
+    locationRestaurant,
   } = props;
   return (
     <View style={styles.viewForm}>
