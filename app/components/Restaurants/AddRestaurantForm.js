@@ -5,13 +5,15 @@ import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import { map, size, filter } from "lodash";
 
+const widthScreen = Dimensions.get("window").width;
+
 export default function AddRestaurantForm(props) {
   const { toastRef, setIsLoading, navigation } = props;
   const [restaurantName, setRestaurantName] = useState("");
   const [restaurantAddress, setRestaurantAddress] = useState("");
   const [restaurantDescription, setRestaurantDescription] = useState("");
   const [imagesSelected, setImagesSelected] = useState([]);
-  
+
   const addRestaurant = () => {
     console.log("Apretado");
     console.log("restaurantName: " + restaurantName);
@@ -20,6 +22,7 @@ export default function AddRestaurantForm(props) {
   };
   return (
     <ScrollView style={styles.scrollView}>
+      <ImageRestaurant imageRestaurant={imagesSelected[0]} />
       <FormAdd
         setRestaurantName={setRestaurantName}
         setRestaurantAddress={setRestaurantAddress}
@@ -36,6 +39,21 @@ export default function AddRestaurantForm(props) {
         buttonStyle={styles.btnAddRestaurant}
       />
     </ScrollView>
+  );
+}
+
+function ImageRestaurant(props) {
+  const { imageRestaurant } = props;
+  return (
+    <View style={styles.viewPhoto}>
+      <Image
+        source={
+            imageRestaurant
+            ? { uri: imageRestaurant }
+            : require("../../../assets/img/no-image.png")}
+        style={{ width: widthScreen, height: 200 }}
+      />
+    </View>
   );
 }
 
@@ -140,6 +158,13 @@ function UploadImage(props) {
   );
 }
 
+// variables
+const variables = {
+  widthIcon: 66,
+  heightIcon: 66,
+};
+
+//estilos
 const styles = StyleSheet.create({
   scrollView: {
     height: "100%",
@@ -169,13 +194,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 10,
-    height: 70,
-    width: 70,
+    height: variables.heightIcon,
+    width: variables.widthIcon,
     backgroundColor: "#e3e3e3",
   },
   miniatureStyles: {
-    width: 66,
-    height: 66,
+    height: variables.heightIcon,
+    width: variables.widthIcon,
     marginRight: 10,
+  },
+  viewPhoto: {
+    alignItems: "center",
+    height: 200,
+    marginBottom: 20,
   },
 });
