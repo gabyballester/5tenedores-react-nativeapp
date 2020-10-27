@@ -13,6 +13,7 @@ import { firebaseApp } from "../../utils/firebase";
 import firebase from "firebase/app";
 import "firebase/storage";
 import "firebase/firestore";
+//constante db
 const db = firebase.firestore(firebaseApp);
 
 const widthScreen = Dimensions.get("window").width;
