@@ -17,6 +17,7 @@ export default function Restaurants(props) {
   const [totalRestaurants, setTotalRestaurants] = useState(0);
   const [startRestaurants, setStartRestaurants] = useState(null);
   const limitRestaurants = 10;
+  console.log(restaurants.length);
   // Ejecución al crearse el componente
   // seteo la info del usuario
   useEffect(() => {
@@ -48,7 +49,7 @@ export default function Restaurants(props) {
         }); //seteo los nuevos restaurantes con el array resultante
         setRestaurants(resultRestaurants);
       });
-  }, []);
+  }, [setRestaurants]);
 
   return (
     <View style={styles.viewBody}>
