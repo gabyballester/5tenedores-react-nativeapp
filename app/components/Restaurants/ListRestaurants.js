@@ -13,7 +13,8 @@ import { size } from "lodash";
 import { Image } from "react-native-elements";
 
 export default function ListRestaurants(props) {
-  const { restaurants } = props;
+  const { restaurants, handleLoadMore, isLoading } = props;
+  console.log("número de restaurantes");
   console.log(restaurants.length);
 
   return (
@@ -23,13 +24,20 @@ export default function ListRestaurants(props) {
           data={restaurants}
           renderItem={(restaurant) => <Restaurant restaurant={restaurant} />}
           keyExtractor={(item, index) => index.toString()}
+          // margen inferior donde la función se va a ejecutar
+          onEndReachedThreshold={0.5}
+          // cuando llegue al final que ejecute el handleLoadMore
+          onEndReached={handleLoadMore}
+          // componente footer se lo paso como prop
+          // y paso por el componente isLoading
+          ListFooterComponent={<FooterList isLoading={isLoading} />}
         />
       ) : (
-        <View>
-          <ActivityIndicator color="#00a680" />
-          <Text>Cargando restaurantes..</Text>
-        </View>
-      )}
+          <View>
+            <ActivityIndicator color="#00a680" />
+            <Text>Cargando restaurantes..</Text>
+          </View>
+        )}
     </View>
   );
 }
@@ -70,6 +78,25 @@ function Restaurant(props) {
   );
 }
 
+function FooterList(props) {
+  // recupero isLoading para spinner de cargando
+  const { isLoading } = props;
+
+  if (isLoading) {
+    return (
+      <View style={styles.loaderRestaurants}>
+        <ActivityIndicator size="large" color="fff" />
+      </View>
+    );
+  } else {
+    return (
+      <View style={styles.notFoundRestaurants}>
+        <Text>No quedan restaurantes por cargar</Text>
+      </View>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   loaderRestaurants: {
     marginTop: 10,
@@ -94,8 +121,13 @@ const styles = StyleSheet.create({
     color: "grey",
   },
   restaurantDescription: {
-    paddingTop: 2, 
+    paddingTop: 2,
     color: "grey",
     width: 300
+  },
+  notFoundRestaurants: {
+    marginTop: 10,
+    marginBottom: 20,
+    alignItems: "center",
   },
 });

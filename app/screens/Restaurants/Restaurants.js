@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { Icon } from "react-native-elements";
 import { firebaseApp } from "../../utils/firebase";
-import firebase from "firebase/app";
 import "firebase/firestore";
+import firebase from "firebase/app";
 import ListRestaurants from "../../components/Restaurants/ListRestaurants";
 //constante db
 const db = firebase.firestore(firebaseApp);
@@ -16,6 +16,7 @@ export default function Restaurants(props) {
   const [restaurants, setRestaurants] = useState([]);
   const [totalRestaurants, setTotalRestaurants] = useState(0);
   const [startRestaurants, setStartRestaurants] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const limitRestaurants = 10;
   console.log(restaurants.length);
   // Ejecución al crearse el componente
@@ -51,9 +52,45 @@ export default function Restaurants(props) {
       });
   }, [setRestaurants]);
 
+  const handleLoadMore = () => {
+    const resultRestaurants = []; // array vacío de restaurantes
+    // si length de restaurante es menor que total seteo carga a true
+    restaurants.length < totalRestaurants && setIsLoading(true);
+
+    db.collection("restaurants") //llamada a firebase
+      .orderBy("createdAt", "desc")
+      //empieza después del último restaurante
+      .startAfter(startRestaurants.data().createdAt)
+      .limit(limitRestaurants) // límite de 10 más
+      .get()
+      .then((response) => {
+        //devuelve response
+        if (response.docs.length > 0) {
+          // si hay más restaurantes
+          // guardamos el último restaurante para continuar por el siguiente
+          setStartRestaurants(response.docs[response.docs.length - 1]);
+        } else {
+          // si entra aquí no hay más restaurantes que cargar
+          setIsLoading(false); // seteamos el loading a false
+        } // itero el response para sacar cada doc
+        response.forEach((doc) => {
+          const restaurant = doc.data();
+          restaurant.id = doc.id; // agrego el id al restaurante
+          // agrego al array vacío los nuevos restaurantes
+          resultRestaurants.push(restaurant);
+        });
+        // para unir los viejos restaurantes con los nuevos
+        setRestaurants([...restaurants, ...resultRestaurants]);
+      });
+  };
+
   return (
     <View style={styles.viewBody}>
-      <ListRestaurants restaurants={restaurants} />
+      <ListRestaurants
+        restaurants={restaurants}
+        handleLoadMore={handleLoadMore}
+        isLoading={isLoading}
+      />
       {user && (
         <Icon
           reverse
