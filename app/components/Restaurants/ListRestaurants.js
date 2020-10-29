@@ -9,11 +9,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { size } from "lodash";
+import { useNavigation } from "@react-navigation/native"
 
 import { Image } from "react-native-elements";
 
 export default function ListRestaurants(props) {
   const { restaurants, handleLoadMore, isLoading } = props;
+  const navigation = useNavigation();
   console.log("número de restaurantes");
   console.log(restaurants.length);
 
@@ -22,7 +24,11 @@ export default function ListRestaurants(props) {
       {size(restaurants) > 0 ? (
         <FlatList
           data={restaurants}
-          renderItem={(restaurant) => <Restaurant restaurant={restaurant} />}
+          renderItem={(restaurant) =>
+            <Restaurant
+              restaurant={restaurant}
+              navigation={navigation} />
+          }
           keyExtractor={(item, index) => index.toString()}
           // margen inferior donde la función se va a ejecutar
           onEndReachedThreshold={0.5}
@@ -43,12 +49,13 @@ export default function ListRestaurants(props) {
 }
 
 function Restaurant(props) {
-  const { restaurant } = props;
-  const { images, name, address, description } = restaurant.item;
+  const { restaurant, navigation } = props;
+  const { id, images, name, address, description } = restaurant.item;
   const imageRestaurant = images[0];
 
   const goRestaurant = () => {
-    console.log("OK!!");
+    //screen a la que quiero ir
+    navigation.navigate("restaurant", { id, name });
   };
 
   return (
