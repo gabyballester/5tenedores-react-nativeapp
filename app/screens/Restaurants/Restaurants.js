@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 import { Icon } from "react-native-elements";
+import { useFocusEffect } from "@react-navigation/native";
 import { firebaseApp } from "../../utils/firebase";
 import "firebase/firestore";
 import firebase from "firebase/app";
@@ -27,30 +28,32 @@ export default function Restaurants(props) {
     });
   }, []);
 
-  useEffect(() => {
-    db.collection("restaurants")
-      .get()
-      .then((snap) => {
-        setTotalRestaurants(snap.size);
-      });
+  useFocusEffect(
+    useCallback(() => {
+      db.collection("restaurants")
+        .get()
+        .then((snap) => {
+          setTotalRestaurants(snap.size);
+        });
 
-    const resultRestaurants = [];
+      const resultRestaurants = [];
 
-    db.collection("restaurants")
-      .orderBy("createdAt", "desc")
-      .limit(limitRestaurants)
-      .get()
-      .then((response) => {
-        setStartRestaurants(response.docs[response.docs.length - 1]);
-        response.forEach((doc) => {
-          //recorro los restaurantes
-          const restaurant = doc.data();
-          restaurant.id = doc.id; // seteo el id
-          resultRestaurants.push(restaurant); //rellenamos array
-        }); //seteo los nuevos restaurantes con el array resultante
-        setRestaurants(resultRestaurants);
-      });
-  }, [setRestaurants]);
+      db.collection("restaurants")
+        .orderBy("createdAt", "desc")
+        .limit(limitRestaurants)
+        .get()
+        .then((response) => {
+          setStartRestaurants(response.docs[response.docs.length - 1]);
+          response.forEach((doc) => {
+            //recorro los restaurantes
+            const restaurant = doc.data();
+            restaurant.id = doc.id; // seteo el id
+            resultRestaurants.push(restaurant); //rellenamos array
+          }); //seteo los nuevos restaurantes con el array resultante
+          setRestaurants(resultRestaurants);
+        });
+    }, [setRestaurants])
+  );
 
   const handleLoadMore = () => {
     const resultRestaurants = []; // array vacío de restaurantes
