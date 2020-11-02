@@ -4,6 +4,7 @@ import { StyleSheet, View, Text, ScrollView, Dimensions } from 'react-native';
 import { Rating } from 'react-native-elements';
 import Loading from "../../components/Loading";
 import Carousel from "../../components/Carousel";
+import Map from "../../components/Map";
 
 // importo firestore y lo necesario
 import { firebaseApp } from "../../utils/firebase";
@@ -48,6 +49,11 @@ export default function Restaurant(props) {
                 description={restaurant.description}
                 rating={rating}
             />
+            <RestaurantInfo
+                location={restaurant.location}
+                name={restaurant.name}
+                address={restaurant.address}
+            />
         </ScrollView>
     )
 }
@@ -70,6 +76,31 @@ function TitleRestaurant(props) {
     )
 }
 
+function RestaurantInfo(props) {
+    const { location, name, address } = props;
+
+    return (
+        <View style={styles.viewRestaurantInfo}>
+            <Text style={styles.restaurantInfoTitle}>
+                Información sobre el restaurante
+          </Text>
+            <Map location={location} name={name} height={100} />
+          {/* {map(listInfo, (item, index) => (
+            <ListItem
+              key={index}
+              title={item.text}
+              leftIcon={{
+                name: item.iconName,
+                type: item.iconType,
+                color: "#00a680",
+              }}
+              containerStyle={styles.containerListItem}
+            />
+          ))} */}
+        </View>
+    );
+}
+
 const styles = StyleSheet.create({
     viewBody: {
         flex: 1,
@@ -89,4 +120,27 @@ const styles = StyleSheet.create({
         position: "absolute",
         right: 0,
     },
+    viewRestaurantInfo: {
+        margin: 15,
+        marginTop: 25,
+    },
+    restaurantInfoTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
+        marginBottom: 10,
+    },
+    // containerListItem: {
+    //     borderBottomColor: "#d8d8d8",
+    //     borderBottomWidth: 1,
+    // },
+    // viewFavorite: {
+    //     position: "absolute",
+    //     top: 0,
+    //     right: 0,
+    //     zIndex: 2,
+    //     backgroundColor: "#fff",
+    //     borderBottomLeftRadius: 100,
+    //     padding: 5,
+    //     paddingLeft: 15,
+    // },
 })
