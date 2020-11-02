@@ -6,6 +6,7 @@ import { map } from "lodash";
 import Loading from "../../components/Loading";
 import Carousel from "../../components/Carousel";
 import Map from "../../components/Map";
+import ListReviews from "../../components/Restaurants/ListReviews";
 
 // importo firestore y lo necesario
 import { firebaseApp } from "../../utils/firebase";
@@ -54,6 +55,11 @@ export default function Restaurant(props) {
                 location={restaurant.location}
                 name={restaurant.name}
                 address={restaurant.address}
+            />
+            <ListReviews
+            navigation={navigation}
+            idRestaurant={restaurant.id}
+            setRating={setRating}
             />
         </ScrollView>
     )
