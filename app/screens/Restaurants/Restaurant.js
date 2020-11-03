@@ -1,7 +1,7 @@
 // snippet rnfs
 import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Text, ScrollView, Dimensions } from 'react-native';
-import { Rating, ListItem } from "react-native-elements";
+import { Rating, ListItem, Icon } from "react-native-elements";
 import { map } from "lodash";
 import { useFocusEffect } from "@react-navigation/native";
 import Loading from "../../components/Loading";
@@ -44,6 +44,19 @@ export default function Restaurant(props) {
 
     return (
         <ScrollView vertical style={styles.viewBody}>
+            <View style={styles.viewFavorite}>
+                <Icon
+                    type="material-community"
+                    name={"heart"}
+                    onPress={()=>console.log("add to favorites")}
+                    color="#000"
+                    underlayColor="transparent"
+                    // onPress={isFavorite ? removeFavorite : addFavorite}
+                    // color={isFavorite ? "#f00" : "#000"}
+                    // size={35}
+                    // underlayColor="transparent"
+                />
+            </View>
             <Carousel
                 arrayImages={restaurant.images}
                 height={250}
@@ -163,14 +176,14 @@ const styles = StyleSheet.create({
         borderBottomColor: "#d8d8d8",
         borderBottomWidth: 1,
     },
-    // viewFavorite: {
-    //     position: "absolute",
-    //     top: 0,
-    //     right: 0,
-    //     zIndex: 2,
-    //     backgroundColor: "#fff",
-    //     borderBottomLeftRadius: 100,
-    //     padding: 5,
-    //     paddingLeft: 15,
-    // },
+    viewFavorite: {
+        position: "absolute",
+        top: 0,
+        right: 0,
+        zIndex: 2,
+        backgroundColor: "#fff",
+        borderBottomLeftRadius: 100,
+        padding: 5,
+        paddingLeft: 15,
+    },
 })
