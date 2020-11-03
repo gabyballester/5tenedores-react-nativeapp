@@ -10,6 +10,9 @@ import {
 } from "react-native";
 import { Image, Icon, Button } from "react-native-elements";
 import { useFocusEffect } from "@react-navigation/native";
+import Toast from "react-native-easy-toast";
+import { size } from "lodash";
+import Loading from "../components/Loading";
 // configuración para firebase
 import { firebaseApp } from "../utils/firebase";
 import firebase from "firebase";
@@ -55,7 +58,6 @@ export default function Favorites() {
               }); // al terminar setea restaurants con el array resultante
               setRestaurants(restuarants);
             });
-
           });
       }
     }, [userLogged])
@@ -73,9 +75,29 @@ export default function Favorites() {
     return Promise.all(arrayRestaurants);
   };
 
+  if (!restaurants) {
+    // si no existen restaurantes que muestre loading
+    return <Loading isVisible={true} text="Cargando restaurantes.." />;
+    // si existe y además existen restaurantes
+  } else if (size(restaurants) === 0) {
+    // retorna el componente creado
+    return <NotFoundRestaurants />;
+  }
+
   return (
     <View>
       <Text>Favorites</Text>
+    </View>
+  );
+}
+
+function NotFoundRestaurants() {
+  return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <Icon type="material-community" name="alert-outline" size={50} />
+      <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+        No tienes restaurantes en tu lista
+      </Text>
     </View>
   );
 }
