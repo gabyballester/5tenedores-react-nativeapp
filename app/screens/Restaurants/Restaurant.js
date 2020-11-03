@@ -1,8 +1,9 @@
 // snippet rnfs
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Text, ScrollView, Dimensions } from 'react-native';
-import { Rating, ListItem, Icon } from "react-native-elements";
+import { Rating, ListItem } from "react-native-elements";
 import { map } from "lodash";
+import { useFocusEffect } from "@react-navigation/native";
 import Loading from "../../components/Loading";
 import Carousel from "../../components/Carousel";
 import Map from "../../components/Map";
@@ -23,19 +24,21 @@ export default function Restaurant(props) {
     const [rating, setRating] = useState(0)
     console.log(restaurant);
 
-    navigation.setOptions({ title: name })
+    navigation.setOptions({ title: name });
 
-    useEffect(() => {
-        db.collection("restaurants")
-            .doc(id)
-            .get()
-            .then((response) => {
-                const data = response.data();
-                data.id = response.id;
-                setRestaurant(data);
-                setRating(data.rating);
-            })
-    }, [])
+    useFocusEffect(
+        useCallback(() => {
+            db.collection("restaurants")
+                .doc(id)
+                .get()
+                .then((response) => {
+                    const data = response.data();
+                    data.id = response.id;
+                    setRestaurant(data);
+                    setRating(data.rating);
+                });
+        }, [])
+    );
 
     if (!restaurant) return <Loading isVisible={true} text="Cargando.." />
 
@@ -57,9 +60,8 @@ export default function Restaurant(props) {
                 address={restaurant.address}
             />
             <ListReviews
-            navigation={navigation}
-            idRestaurant={restaurant.id}
-            setRating={setRating}
+                navigation={navigation}
+                idRestaurant={restaurant.id}
             />
         </ScrollView>
     )
